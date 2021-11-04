@@ -1,181 +1,91 @@
-# Project 2 - Ames Housing Data and Kaggle Challenge
+# Project 2 - Ames Iowa Housing Predictability
 
-Welcome to Project 2! It's time to start modeling.
+### Problem Statement:
 
-**Primary Learning Objectives:**
-1. Creating and iteratively refining a regression model
-2. Using [Kaggle](https://www.kaggle.com/) to practice the modeling process
-3. Providing business insights through reporting and presentation.
+As a Data Scientist within XYZ, llc. I have been tasked with finding a model that can help predict home sale prices in the Ames, Iowa market (A Market XYZ is looking to expand into). XYZ generates revenue by selling advertising to businesses in the local area, and base these rates to businesses that want to advertise in specific neighborhood value areas. This value is derived by accurately predicting the value(sale price) of the houses in the area. There are several factors that go into calculating these values, let's dive into it!
 
-You are tasked with creating a regression model based on the Ames Housing Dataset. This model will predict the price of a house at sale.
+### Research:
 
-The Ames Housing Dataset is an exceptionally detailed and robust dataset with over 70 columns of different features relating to houses.
+As evidenced by XYZ's business model, the location plays a big importance. Not only for us, but also for the values of the properties we are estimating. House value can be summarized by looking at the following data:
+ 
+1. Historical Sale Prices
+2. Neighborhood
+3. The Market
+4. Size and Appeal
+5. Age and Condition
+6. Nearby Features
 
-Secondly, we are hosting a competition on Kaggle to give you the opportunity to practice the following skills:
+Source: https://www.inman.com/2017/08/07/6-factors-that-influence-a-homes-value/
 
-- Refining models over time
-- Use of train-test split, cross-validation, and data with unknown values for the target to simulate the modeling process
-- The use of Kaggle as a place to practice data science
+Luckily for us, XYZ has been great at scraping data on the housing market in the area! We will be able to examine in more depth points 1, 2, 4, and 5.
 
-As always, you will be submitting a technical report and a presentation. **You may find that the best model for Kaggle is not the best model to address your data science problem.**
+### Datasets
 
-## Set-up
+The data set we will primarily be looking at is on the Ames Iowa housing market and spans from houses that were sold from 2006-2010. There are over 80 columns of data, with over 30 consiting of numeric values, while the rest are categorical
 
-Before you begin working on this project, please do the following:
+[Link to Data Dictionary](https://www.kaggle.com/c/dsir-1011-project-2-regression-challenge/data)
 
-1. Sign up for an account on [Kaggle](https://www.kaggle.com/)
-2. **IMPORTANT**: Click this link ([Regression Challenge Sign Up](https://www.kaggle.com/t/d365a5de71e84ec798ceb95995ebbee8)) to **join** the competition (otherwise you will not be able to make submissions!)
-3. Review the material on the [DSIR-1011 Regression Challenge](https://www.kaggle.com/c/dsir-1011-project-2-regression-challenge)
-4. Review the [data description](http://jse.amstat.org/v19n3/decock/DataDocumentation.txt).
 
-## The Modeling Process
+### Data Analysis and Visualization
 
-1. The train dataset has all of the columns that you will need to generate and refine your models. The test dataset has all of those columns except for the target that you are trying to predict in your Regression model.
-2. Generate your regression model using the training data. We expect that within this process, you'll be making use of:
-    - train-test split
-    - cross-validation / grid searching for hyperparameters
-    - strong exploratory data analysis to question correlation and relationship across predictive variables
-    - code that reproducibly and consistently applies feature transformation (such as the preprocessing library)
-3. Predict the values for your target column in the test dataset and submit your predictions to Kaggle to see how your model does against unknown data.
-    - **Note**: Kaggle expects to see your submissions in a specific format. Check the challenge's page to make sure you are formatting your CSVs correctly!
-    - **You are limited to models you've learned in class**. In other words, you cannot use XGBoost, Neural Networks or any other advanced model for this project.
-4. Evaluate your models!
-    - consider your evaluation metrics
-    - consider your baseline score
-    - how can your model be used for inference?
-    - why do you believe your model will generalize to new data?
+Since no data is without flaw, several of the columns mentioned below in analysis may have had missing values. A lot did not, but of the ones mentioned, the following imputing strategy was performed. If the data was numerical, summary statistics were examined along with value counts. Best judgement was used when filling out data. For most that made sense, the mean was used to impute NaN values, for other it would be the mode(most of the time = 0)
 
-## Submission
+One of the first way to get a good sense of the numerical data is to perform a correlation heatmap so that a good sense of what numerically already looks to have a good relationship with the sale price of a house. 
 
-Materials must be submitted by the beginning of class on **Friday, Nov. 5**.
+![](visualizations/Top%2012%20Correlations%20with%20Sales%20Price.png)
 
-Your technical report will be hosted on Github Enterprise. Make sure it includes:
+As you can see from the heatmap, theses 12 features have the highest correlation with salesprice and are a good place to start diving deeper.
 
-- A README.md (that isn't this file)
-- Jupyter notebook(s) with your analysis and models (renamed to describe your project)
-- At least one successful prediction submission on [DSIR-1011 Regression Challenge](https://www.kaggle.com/c/dsir-1011-project-2-regression-challenge) --  you should see your name in the "[Leaderboard](https://www.kaggle.com/c/dsir-1011-project-2-regression-challenge/leaderboard)" tab.
-- Data files
-- Presentation slides
-- Any other necessary files (images, etc.)
+Let's look at just 2 features so that we visually understand what the affect has on sale price. For our example, let's look at Quality and gr_liv_area. In order to create a better model, we will need to feature engineer to create an even better quality column. To do this, we are going to change 3 categorical columns into numerical and multiply them all together.
 
-**Submit your materials through our [google classroom](https://classroom.google.com/u/1/c/NDEwMTU3NDY4OTQ4).**
+- overall_qual (numerical)
+- exter_qual (categorical)
+- heating_qc (categorical)
+- kitchen_qual (categorical)
 
----
+After we have calculated all columns to be numerical and multiplied all by each other, we have a new column we are labeling **Total Quality**. With this new info, let's see how a multiple linear regression performs with 2 features (Total Quality & gr_live_area) against actual sale prices.
 
-## Presentation Structure
+![](visualizations/Saleprice%20animated.gif)
 
-- **Must be within 5 minutes.**
-- Use Google Slides or some other visual aid (Keynote, Powerpoint, etc).
-- Consider the audience. **Semi-technical**.
-- Start with the **data science problem**.
-- Use visuals that are appropriately scaled and interpretable.
-- Talk about your procedure/methodology (high level).
-- Talk about your primary findings.
-- Make sure you provide **clear recommendations** that follow logically from your analyses and narrative and answer your data science problem.
+As we can see by the R2 score of .77, we can see that there is a general positive relationship between those data features and the sale price. Unfortunately, we need something more accurate that .77, but it is a good start in order to see where we stand from an initial model.
 
-Be sure to rehearse and time your presentation before class.
+Before we continue, let's look at the data in 2 buckets (Numerical & Categorical). Let's start by creating a mlr using only Numerical Data. Going back to look at our correlations, if we take the top 12 correlations and create features we have the following coefficient table:
 
----
+![](visualizations/Linreg1Coefficients.png)
 
-## Rubric
-We will evaluate your project (for the most part) using the following criteria.  You should make sure that you consider and/or follow most if not all of the considerations/recommendations outlined below **while** working through your project.
+We have achieved an R2 of 0.76 for only numerical, a downgrade on our original set, but it gives a good look at the coefficients and their relative weights. Looking at these coefficients, we can see that there is a high emphasis put on the overall quality. 
 
-**Scores will be out of 27 points based on the 9 items in the rubric.** <br>
-*3 points per section*<br>
+If we do the same thing but from a categorical point of view looking at location/house info, we produce columns based on House Style, Neighborhood, Lot Shape, and MS Zoning. After we have the data, if we perform a mlr against home sale prices we receive the following coefficients:
 
-| Score | Interpretation |
-| --- | --- |
-| **0** | *Project fails to meet the minimum requirements for this item.* |
-| **1** | *Project meets the minimum requirements for this item, but falls significantly short of portfolio-ready expectations.* |
-| **2** | *Project exceeds the minimum requirements for this item, but falls short of portfolio-ready expectations.* |
-| **3** | *Project meets or exceeds portfolio-ready expectations; demonstrates a thorough understanding of every outlined consideration.* |
+![](visualizations/CategoricalLinRegCoefficients.png)
 
-### The Data Science Process
+With the following model, we were able to increase our R2 score to 0.83, so a better model!
 
-**Problem Statement**
-- Is it clear what the student plans to do?
-- What type of model will be developed?
-- How will success be evaluated?
-- Is the scope of the project appropriate?
-- Is it clear who cares about this or why this is important to investigate?
-- Does the student consider the audience and the primary and secondary stakeholders?
+As we look to improve our model we are now going to introduce 2 things at once to our model!
 
-**Data Cleaning and EDA**
-- Are missing values imputed appropriately?
-- Are distributions examined and described?
-- Are outliers identified and addressed?
-- Are appropriate summary statistics provided?
-- Are steps taken during data cleaning and EDA framed appropriately?
-- Does the student address whether or not they are likely to be able to answer their problem statement with the provided data given what they've discovered during EDA?
+Let's first revisit the top 6 corelated features with sales price:
 
-**Preprocessing and Modeling**
-- Are categorical variables one-hot encoded?
-- Does the student investigate or manufacture features with linear relationships to the target?
-- Have the data been scaled appropriately?
-- Does the student properly split and/or sample the data for validation/training purposes?
-- Does the student utilize feature selection to remove noisy or multi-collinear features?
-- Does the student test and evaluate a variety of models to identify a production algorithm (**AT MINIMUM:** linear regression, lasso, and ridge)?
-- Does the student defend their choice of production model relevant to the data at hand and the problem?
-- Does the student explain how the model works and evaluate its performance successes/downfalls?
+![](visualizations/Abs%20of%20Top%206%20Correlations%20with%20Sales%20Price.png)
 
-**Evaluation and Conceptual Understanding**
-- Does the student accurately identify and explain the baseline score?
-- Does the student select and use metrics relevant to the problem objective?
-- Is more than one metric utilized in order to better assess performance?
-- Does the student interpret the results of their model for purposes of inference?
-- Is domain knowledge demonstrated when interpreting results?
-- Does the student provide appropriate interpretation with regards to descriptive and inferential statistics?
+The first will be feature engineering our numerical columns with **Polynomial Features**. Adding these features greatly increases the amount of column calculations and will provide the linear regression with a better score on the model.
 
-**Conclusion and Recommendations**
-- Does the student provide appropriate context to connect individual steps back to the overall project?
-- Is it clear how the final recommendations were reached?
-- Are the conclusions/recommendations clearly stated?
-- Does the conclusion answer the original problem statement?
-- Does the student address how findings of this research can be applied for the benefit of stakeholders?
-- Are future steps to move the project forward identified?
+After that, we will be adding **categorical columns** housing data on House Style, Lot Shape, and MS Zoning. This will give us a good sense on additional data that will be pertinent to our model becoming more clear.
 
-### Organization and Professionalism
+When we combine both of these into a single data frame (43 features total) and perform a linear regression, we achieve a R2 score of 0.87. This is a great improvemennt and provides an even clearer model for us to predict housing prices. Now with the features that we have specificed, we can say that roughly 87% of the housing data is influenced by our features. This is a great step towards finding a good model for our future predictions at XYZ.
 
-**Project Organization**
-- Are modules imported correctly (using appropriate aliases)?
-- Are data imported/saved using relative paths?
-- Does the README provide a good executive summary of the project?
-- Is markdown formatting used appropriately to structure notebooks?
-- Are there an appropriate amount of comments to support the code?
-- Are files & directories organized correctly?
-- Are there unnecessary files included?
-- Do files and directories have well-structured, appropriate, consistent names?
+Having a lot of features is great, but what if we wanted to cut back on some while maintaining the same R2 score? This is where we will introduce Lasso Regression. With Lasso Regression, we will be able to see what features are actually important and which are not. One important thing to note on Lasso Regression, all numerical data must be scaled, this is how the model punishes large magnitudes that may be pulling the data a certain direction.
 
-**Visualizations**
-- Are sufficient visualizations provided?
-- Do plots accurately demonstrate valid relationships?
-- Are plots labeled properly?
-- Are plots interpreted appropriately?
-- Are plots formatted and scaled appropriately for inclusion in a notebook-based technical report?
+After scaling the above example and implementing Lasso Regression we have the following coefficients:
 
-**Python Syntax and Control Flow**
-- Is care taken to write human readable code?
-- Is the code syntactically correct (no runtime errors)?
-- Does the code generate desired results (logically correct)?
-- Does the code follows general best practices and style guidelines?
-- Are Pandas functions used appropriately?
-- Are `sklearn` methods used appropriately?
+![](visualizations/Lasso%20Coefficients.png)
 
-**Presentation**
-- Is the problem statement clearly presented?
-- Does a strong narrative run through the presentation building toward a final conclusion?
-- Are the conclusions/recommendations clearly stated?
-- Is the level of technicality appropriate for the intended audience?
-- Is the student substantially over or under time?
-- Does the student appropriately pace their presentation?
-- Does the student deliver their message with clarity and volume?
-- Are appropriate visualizations generated for the intended audience?
-- Are visualizations necessary and useful for supporting conclusions/explaining findings?
+The Lasso Model has producted the same R2 score of 0.87, while cutting down on the number of features required by over half!
 
-In order to pass the project, students must earn a minimum score of 1 for each category.
-- Earning below a 1 in one or more of the above categories would result in a failing project.
-- While a minimum of 1 in each category is the required threshold for graduation, students should aim to earn at least an average of 1.5 across each category. An average score below 1.5, while it may be passing, means students may want to solicit specific feedback in order to significantly improve the project before showcasing it as part of a portfolio or the job search.
+Since Lasso sets feature coefficients to 0 if they are not important, we are greatly able to cut back on required features for the model. We have taken our features required from 43 down to 21 through this technique!
 
-### REMEMBER:
+Due to time constraints, this presentation model analysis stops at this point, but pushing the models and producing more feature engineering will produce higher and higher R2 scores while reducing errors.
 
-This is a learning environment and you are encouraged to try new things, even if they don't work out as well as you planned! While this rubric outlines what we look for in a _good_ project, it is up to you to go above and beyond to create a _great_ project. **Learn from your failures and you'll be prepared to succeed in the workforce**.
+### Conclusion and Findings:
+
+Through the use of several techniques and model iterations, I have been able to produce a Lasso model that has produced a R2 score of 0.87, while using only 21 features for analysis. This is a great start into this model, and with more time and analysis, the model will only be made better.
+
