@@ -2,7 +2,7 @@
 
 ### Problem Statement:
 
-As a Data Scientist within XYZ, llc. I have been tasked with finding a model that can help predict home sale prices in the Ames, Iowa market (A Market XYZ is looking to expand into). XYZ generates revenue by selling advertising to businesses in the local area, and base these rates to businesses that want to advertise in specific neighborhood value areas. This value is derived by accurately predicting the value(sale price) of the houses in the area. There are several factors that go into calculating these values, let's dive into it!
+As a Data Scientist within XYZ, llc. I have been tasked with finding a model that can help predict home sale prices in the Ames, Iowa market (A Market XYZ is looking to expand into). XYZ generates revenue by selling advertising to businesses in the local area, and they base these rates on in specific neighborhood values. This value is derived by accurately predicting the sale price of the houses in that area. There are several factors that go into calculating these values, let's dive into it with Linear Regression! Our goal is to produce the model with the highest R2 score.
 
 ### Research:
 
@@ -21,7 +21,7 @@ Luckily for us, XYZ has been great at scraping data on the housing market in the
 
 ### Datasets
 
-The data set we will primarily be looking at is on the Ames Iowa housing market and spans from houses that were sold from 2006-2010. There are over 80 columns of data, with over 30 consiting of numeric values, while the rest are categorical
+The data set we will primarily be looking at is on the Ames Iowa housing market and spans from houses that were sold from 2006-2010. There are over 80 columns of data, with over 30 consiting of numeric values, while the rest are categorical.
 
 [Link to Data Dictionary](https://www.kaggle.com/c/dsir-1011-project-2-regression-challenge/data)
 
@@ -36,7 +36,7 @@ One of the first way to get a good sense of the numerical data is to perform a c
 
 As you can see from the heatmap, theses 12 features have the highest correlation with salesprice and are a good place to start diving deeper.
 
-Let's look at just 2 features so that we visually understand what the affect has on sale price. For our example, let's look at Quality and gr_liv_area. In order to create a better model, we will need to feature engineer to create an even better quality column. To do this, we are going to change 3 categorical columns into numerical and multiply them all together.
+Let's look at just 2 features so that we visually understand what the affect has on sale price. For our example, let's look at Quality and gr_liv_area. In order to create a better model, we will need to feature engineer to create an even better quality column. To do this, we are going to change 3 categorical columns into numerical ones and multiply them all together.
 
 - overall_qual (numerical)
 - exter_qual (categorical)
@@ -55,11 +55,11 @@ Before we continue, let's look at the data in 2 buckets (Numerical & Categorical
 
 We have achieved an R2 of 0.76 for only numerical, a downgrade on our original set, but it gives a good look at the coefficients and their relative weights. Looking at these coefficients, we can see that there is a high emphasis put on the overall quality. 
 
-If we do the same thing but from a categorical point of view looking at location/house info, we produce columns based on House Style, Neighborhood, Lot Shape, and MS Zoning. After we have the data, if we perform a mlr against home sale prices we receive the following coefficients:
+If we do the same thing but from a categorical point of view looking at location/house info, we produce columns based on House Style, Neighborhood, Lot Shape, and MS Zoning. After we have the data transformed, if we perform a mlr against home sale prices we receive the following coefficients:
 
 ![](visualizations/CategoricalLinRegCoefficients.png)
 
-With the following model, we were able to increase our R2 score to 0.83, so a better model!
+With the above model, we were able to increase our R2 score to 0.83, so a better model!
 
 As we look to improve our model we are now going to introduce 2 things at once to our model!
 
@@ -69,11 +69,11 @@ Let's first revisit the top 6 corelated features with sales price:
 
 The first will be feature engineering our numerical columns with **Polynomial Features**. Adding these features greatly increases the amount of column calculations and will provide the linear regression with a better score on the model.
 
-After that, we will be adding **categorical columns** housing data on House Style, Lot Shape, and MS Zoning. This will give us a good sense on additional data that will be pertinent to our model becoming more clear.
+After that, we will be adding **categorical column** data on House Style, Lot Shape, and MS Zoning. This will give us a good sense on additional data that will be pertinent to our model becoming more clear.
 
 When we combine both of these into a single data frame (43 features total) and perform a linear regression, we achieve a R2 score of 0.87. This is a great improvemennt and provides an even clearer model for us to predict housing prices. Now with the features that we have specificed, we can say that roughly 87% of the housing data is influenced by our features. This is a great step towards finding a good model for our future predictions at XYZ.
 
-Having a lot of features is great, but what if we wanted to cut back on some while maintaining the same R2 score? This is where we will introduce Lasso Regression. With Lasso Regression, we will be able to see what features are actually important and which are not. One important thing to note on Lasso Regression, all numerical data must be scaled, this is how the model punishes large magnitudes that may be pulling the data a certain direction.
+Having a lot of features is great, but what if we wanted to cut back on some while maintaining relatively the same R2 score? This is where we will introduce Lasso Regression. With Lasso Regression, we will be able to see what features are actually important and which are not. One important thing to note on Lasso Regression, all numerical data (besides dummy data) must be scaled, this is how the model punishes large magnitudes that may be pulling the data a certain direction.
 
 After scaling the above example and implementing Lasso Regression we have the following coefficients:
 
